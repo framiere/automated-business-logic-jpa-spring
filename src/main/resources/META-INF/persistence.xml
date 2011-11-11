@@ -5,10 +5,10 @@
  
     <persistence-unit name="buslogicdemo">
       <provider>org.hibernate.ejb.HibernatePersistence</provider>
-      <class>autobizlogic.demo.buslogicdemospring.data.PurchaseOrder</class>
-      <class>autobizlogic.demo.buslogicdemospring.data.Customer</class>
-      <class>autobizlogic.demo.buslogicdemospring.data.Lineitem</class>
-      <class>autobizlogic.demo.buslogicdemospring.data.Product</class>
+      <class>com.autobizlogic.demo.service.data.PurchaseOrder</class>
+      <class>com.autobizlogic.demo.service.data.Customer</class>
+      <class>com.autobizlogic.demo.service.data.Lineitem</class>
+      <class>com.autobizlogic.demo.service.data.Product</class>
       <properties>
       	 <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
       	 <property name="hibernate.default_catalog" value="PUBLIC" />

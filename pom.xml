@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>autobizlogic.demo</groupId>
-	<artifactId>toto</artifactId>
-	<name>abc</name>
+	<groupId>com.autobizlogic.demo</groupId>
+	<artifactId>spring-autobizlogic-demo</artifactId>
+	<name>${project.artifactId}</name>
 	<packaging>war</packaging>
-	<version>1.0.0-BUILD-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<properties>
-		<java-version>1.6</java-version>
+		<java.version>1.6</java.version>
 		<org.springframework-version>3.0.5.RELEASE</org.springframework-version>
 		<org.springframework.roo-version>1.0.2.RELEASE</org.springframework.roo-version>
 		<org.aspectj-version>1.6.9</org.aspectj-version>
@@ -126,6 +126,7 @@
 			<artifactId>hsqldb</artifactId>
 			<version>2.2.4</version>
 		</dependency>
+		<!--  groovy -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
@@ -152,9 +153,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
-					<source>${java-version}</source>
-					<target>${java-version}</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>

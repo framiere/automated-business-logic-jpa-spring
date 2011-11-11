@@ -3,7 +3,7 @@
 <%@ tag import="com.autobizlogic.abl.businesslogicengine.*" %>
 <%@ tag import="com.autobizlogic.abl.businesslogicengine.ruleexec.*" %>
 <%@ tag import="com.autobizlogic.abl.event.*" %>
-<%@ tag import="autobizlogic.demo.buslogicdemospring.DemoEventListener" %>
+<%@ tag import="com.autobizlogic.demo.service.DemoEventListener" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ attribute name="orderNumber" type="java.lang.Long" %>
 <div style="border: 1px solid #888888; padding: 5px;" id="ChangeSummaryDiv">

@@ -1,4 +1,4 @@
-package autobizlogic.demo.buslogicdemospring.businesslogic;
+package com.autobizlogic.demo.service.businesslogic;
 
 import com.autobizlogic.abl.businesslogic.annotations.*;
 

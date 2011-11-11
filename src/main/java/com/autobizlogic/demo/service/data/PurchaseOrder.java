@@ -1,4 +1,4 @@
-package autobizlogic.demo.buslogicdemospring.data;
+package com.autobizlogic.demo.service.data;
 
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -34,8 +34,7 @@ public class PurchaseOrder {
 	public void setNotes(String notes) { this.notes = notes; }
 	private String notes;
 
-	// Relationships
-	@ManyToOne //(fetch=FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name="customer_name", nullable=false)
 	public Customer getCustomer() { return customer; }
 	public void setCustomer(Customer customer) { this.customer = customer; }

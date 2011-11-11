@@ -1,4 +1,7 @@
-package autobizlogic.demo.buslogicdemospring.data;
+package com.autobizlogic.demo.service.data;
+
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,7 +12,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "customer")
 public class Customer implements Cloneable {
-
 	private String name;
 	private BigDecimal balance;
 	private BigDecimal creditLimit;
@@ -48,7 +50,7 @@ public class Customer implements Cloneable {
 		this.preferred = isPreferred;
 	}
 	
-	@OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.EAGER, mappedBy="customer")
+	@OneToMany(cascade=ALL, fetch=EAGER, mappedBy="customer")
 	@OrderBy("orderNumber desc")
 	public List<PurchaseOrder> getPurchaseOrders() { return this.purchaseOrders; }
 	public void setPurchaseOrders(List<PurchaseOrder> purchaseorders) { this.purchaseOrders = purchaseorders; }

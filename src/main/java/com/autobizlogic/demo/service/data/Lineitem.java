@@ -1,4 +1,6 @@
-package autobizlogic.demo.buslogicdemospring.data;
+package com.autobizlogic.demo.service.data;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 import java.math.BigDecimal;
 import javax.persistence.*;
@@ -7,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "lineitem")
 public class Lineitem {
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy=IDENTITY)
 	@Column(name="lineitem_id")
 	public long getLineitemId() { return lineitemId;}
 	public void setLineitemId(long lineitemId) { this.lineitemId = lineitemId;}
@@ -28,13 +30,13 @@ public class Lineitem {
 	public void setAmount(BigDecimal amount) { this.amount = amount; }
 	private BigDecimal amount;
 	
-	@ManyToOne //(fetch=FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name="product_number")
 	public Product getProduct() { return product;}
 	public void setProduct(Product product) { this.product = product; }
 	private Product product;
 	
-	@ManyToOne //(fetch=FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name="order_number")
 	public PurchaseOrder getPurchaseOrder() { return purchaseOrder; }
 	public void setPurchaseOrder(PurchaseOrder purchaseorder) { this.purchaseOrder = purchaseorder; }

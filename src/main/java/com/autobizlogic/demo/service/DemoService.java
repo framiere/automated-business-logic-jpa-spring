@@ -1,4 +1,7 @@
-package autobizlogic.demo.buslogicdemospring;
+package com.autobizlogic.demo.service;
+
+import static java.lang.Boolean.FALSE;
+import static java.math.BigDecimal.ZERO;
 
 import java.math.BigDecimal;
 
@@ -15,14 +18,13 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 
-import autobizlogic.demo.buslogicdemospring.data.Customer;
-import autobizlogic.demo.buslogicdemospring.data.Lineitem;
-import autobizlogic.demo.buslogicdemospring.data.Product;
-import autobizlogic.demo.buslogicdemospring.data.PurchaseOrder;
-
 import com.autobizlogic.abl.businesslogicengine.ConstraintException;
+import com.autobizlogic.demo.service.data.Customer;
+import com.autobizlogic.demo.service.data.Lineitem;
+import com.autobizlogic.demo.service.data.Product;
+import com.autobizlogic.demo.service.data.PurchaseOrder;
 
-@Service("customerService")
+@Service
 public class DemoService {
 
     @PersistenceContext
@@ -47,25 +49,12 @@ public class DemoService {
         model.addAttribute("products", em.createQuery("from Product order by name").getResultList());
 
         // Put the requested customer (or first customer if none requested) in the model
-        Customer customer;
-        if (customerName != null && customerName.length() > 0) {
-            customer = em.find(Customer.class, customerName);
-        } else {
-            customer = (Customer) em.createQuery("from Customer order by name").getResultList().get(0);
-        }
+        Customer customer = getCustomer(customerName);
         model.addAttribute("customer", customer);
-
-        // Pre-read all objects into memory, so that the view will not get a LazyInitializationException
-        // when navigating the objects.
-        for (PurchaseOrder order : customer.getPurchaseOrders()) {
-            for (Lineitem item : order.getLineitems()) {
-                Product product = item.getProduct();
-            }
-        }
 
         // Is there anything else we need to do?
         if (action == null) {
-            return;
+            return; // nope
         }
         switch (action) {
         case update:
@@ -83,15 +72,34 @@ public class DemoService {
         }
     }
 
-    enum Action {
+    private Customer getCustomer(String customerName) {
+        Customer customer;
+        if (customerName != null && customerName.length() > 0) {
+            customer = em.find(Customer.class, customerName);
+        } else {
+            customer = (Customer) em.createQuery("from Customer order by name").getResultList().get(0);
+        }
+
+        // Pre-read all objects into memory, so that the view will not get a LazyInitializationException
+        // when navigating the objects.
+        for (PurchaseOrder order : customer.getPurchaseOrders()) {
+            for (Lineitem item : order.getLineitems()) {
+                @SuppressWarnings("unused")
+                Product product = item.getProduct();
+            }
+        }
+        return customer;
+    }
+
+    public enum Action {
         update, create, delete, prefs;
     }
 
-    enum DataType {
+    public enum DataType {
         customer, order, lineitem;
     }
 
-    enum Attribute {
+    public enum Attribute {
         creditLimit, isPreferred, paid, notes, customer, qtyOrdered, product
     }
 
@@ -101,69 +109,89 @@ public class DemoService {
     private void doUpdate(Model model, Customer customer, DataType dataType, Attribute attribute, String value, String id) {
         switch (dataType) {
         case customer:
-            switch (attribute) {
-            case creditLimit:
-                customer.setCreditLimit(new BigDecimal(value));
-                break;
-            case isPreferred:
-                customer.setPreferred(!customer.isPreferred());
-                break;
-            }
+            updateCustomer(customer, attribute, value);
             return;
         case order:
-            PurchaseOrder order = em.find(PurchaseOrder.class, new Long(id));
-            switch (attribute) {
-            case paid:
-                order.setPaid(!order.getPaid());
-                break;
-            case notes:
-                order.setNotes(value);
-                break;
-            case customer:
-                order.setCustomer(em.find(Customer.class, value));
-                customer.getPurchaseOrders().remove(order); // Fix this by hand so the objects will reflect reality
-                model.addAttribute("fyi", "Order " + order.getOrderNumber() + " has been reassigned to customer " + value);
-                break;
-            }
+            updateOrder(model, customer, attribute, value, id);
             return;
         case lineitem:
-            Lineitem item = em.find(Lineitem.class, new Long(id));
-            switch (attribute) {
-            case qtyOrdered:
-                item.setQtyOrdered(new Integer(value));
-                break;
-            case product:
-                item.setProduct(em.find(Product.class, new Long(value)));
-                break;
-            }
+            updateLineItem(attribute, value, id);
             return;
+        }
+    }
+
+    private void updateLineItem(Attribute attribute, String value, String id) {
+        Lineitem item = em.find(Lineitem.class, new Long(id));
+        switch (attribute) {
+        case qtyOrdered:
+            item.setQtyOrdered(new Integer(value));
+            break;
+        case product:
+            item.setProduct(em.find(Product.class, new Long(value)));
+            break;
+        }
+    }
+
+    private void updateOrder(Model model, Customer customer, Attribute attribute, String value, String id) {
+        PurchaseOrder order = em.find(PurchaseOrder.class, new Long(id));
+        switch (attribute) {
+        case paid:
+            order.setPaid(!order.getPaid());
+            break;
+        case notes:
+            order.setNotes(value);
+            break;
+        case customer:
+            order.setCustomer(em.find(Customer.class, value));
+            customer.getPurchaseOrders().remove(order); // Fix this by hand so the objects will reflect reality
+            model.addAttribute("fyi", "Order " + order.getOrderNumber() + " has been reassigned to customer " + value);
+            break;
+        }
+    }
+
+    private void updateCustomer(Customer customer, Attribute attribute, String value) {
+        switch (attribute) {
+        case creditLimit:
+            customer.setCreditLimit(new BigDecimal(value));
+            break;
+        case isPreferred:
+            customer.setPreferred(!customer.isPreferred());
+            break;
         }
     }
 
     private void doCreate(Customer customer, DataType dataType, String id) {
         switch (dataType) {
         case order:
-            PurchaseOrder newOrder = new PurchaseOrder();
-            newOrder.setCustomer(customer);
-            customer.getPurchaseOrders().add(0, newOrder); // Fix this by hand so the objects will reflect reality
-            newOrder.setPaid(Boolean.FALSE);
-            newOrder.setAmountTotal(BigDecimal.ZERO);
-            newOrder.setNotes("");
-            em.persist(newOrder);
+            createOrder(customer);
             return;
         case lineitem:
-            Lineitem item = new Lineitem();
-            PurchaseOrder order = em.find(PurchaseOrder.class, new Long(id));
-            order.getLineitems().add(0, item); // Fix this by hand so the objects will reflect reality
-            Product product = em.find(Product.class, 1L);
-            item.setPurchaseOrder(order);
-            item.setProduct(product);
-            item.setQtyOrdered(1);
-            item.setAmount(BigDecimal.ZERO);
-            item.setProductPrice(BigDecimal.ZERO);
-            em.persist(item);
+            createLineItem(id);
             return;
         }
+    }
+
+    private void createLineItem(String id) {
+        Lineitem item = new Lineitem();
+        PurchaseOrder order = em.find(PurchaseOrder.class, new Long(id));
+        order.getLineitems().add(0, item); // Fix this by hand so the objects will reflect reality
+        Product product = em.find(Product.class, 1L);
+        item.setPurchaseOrder(order);
+        item.setProduct(product);
+        item.setQtyOrdered(1);
+        item.setAmount(ZERO);
+        item.setProductPrice(ZERO);
+        em.persist(item);
+    }
+
+    private void createOrder(Customer customer) {
+        PurchaseOrder newOrder = new PurchaseOrder();
+        newOrder.setCustomer(customer);
+        customer.getPurchaseOrders().add(0, newOrder); // Fix this by hand so the objects will reflect reality
+        newOrder.setPaid(FALSE);
+        newOrder.setAmountTotal(ZERO);
+        newOrder.setNotes("");
+        em.persist(newOrder);
     }
 
     private void doDelete(Customer customer, DataType dataType, String id) {
@@ -208,23 +236,13 @@ public class DemoService {
     }
 
     // Note that this method is not marked as transactional
-    public void handleRequestManual(final String customerName, final Model model, final Action action, final DataType dataType, final Attribute attribute, final String value, final String id) {
-        try {
-            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    handleRequest(customerName, model, action, dataType, attribute, value, id);
-                }
-            });
-        } catch (HibernateSystemException ex) {
-            Throwable cause = ex.getCause();
-            if (cause != null && (cause instanceof ConstraintException)) {
-                ConstraintException cex = (ConstraintException) cause;
-                model.addAttribute("errorMessage", cex.getMessage());
-                model.addAttribute("constraintFailures", cex.getConstraintFailures());
-            } else {
-                model.addAttribute("errorMessage", ex.getMessage());
+    public void handleRequestManual(final String customerName, final Model model, final Action action, final DataType dataType, final Attribute attribute,
+            final String value, final String id) {
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                handleRequest(customerName, model, action, dataType, attribute, value, id);
             }
-        }
+        });
     }
 }

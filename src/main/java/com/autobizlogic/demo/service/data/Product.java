@@ -1,4 +1,7 @@
-package autobizlogic.demo.buslogicdemospring.data;
+package com.autobizlogic.demo.service.data;
+
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -27,7 +30,7 @@ public class Product {
 	private BigDecimal price;
 
 	
-	@OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.LAZY, mappedBy="product")
+	@OneToMany(cascade=ALL, fetch=LAZY, mappedBy="product")
 	public Set<Lineitem> getLineitems() { return lineitems; }
 	public void setLineitems(Set<Lineitem> lineitems) { this.lineitems = lineitems; }
 	private Set<Lineitem> lineitems = new HashSet<Lineitem>();
