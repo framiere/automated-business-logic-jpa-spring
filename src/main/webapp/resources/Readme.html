@@ -1,0 +1,147 @@
+<html>
+<head>
+	<title>BusLogicDemo (Spring edition)</title>
+	<style type="text/css">
+		.code {
+			background-color: #DDDDDD;
+			font: normal normal normal 10pt monospace;
+			padding: 3px;
+		}
+	</style>
+</head>
+<body style="padding: 5px; font-family: arial; font-size: 10pt;">
+<div style="width: 800px; border: 1px solid #DDDDDD; padding: 10px; font-family: 'Helvetica' 'Arial' 'sans-serif';">
+<h1>Bus Logic Demo (Spring edition)</h1>
+	
+<h2>What is this?</h2>
+This directory contains a copy of ABL's BusLogicDemo project, pre-configured for Spring.
+
+  <p>BusLogicDemo is a very simple application, which demonstrates the use of some of the basic
+  concepts in ABL. See <a href="http://www.automatedbusinesslogic.com/home/bus-logic-demo">ABL's web site</a> 
+  for more information on what this app does.
+  <p>
+  In this Spring-enabled version, we show how easy it is to integrate ABL's transactional logic engine into
+  a Spring application.
+
+<h2>Pre-requisites</h2>
+
+To run this demo, you will need to have Spring 3.0, which must be installed and running properly.
+In other words, you should be able to create and run a Spring project.
+<p/>
+This project also uses Maven to retrieve most of its libraries. If your IDE has a Maven plugin (and most do),
+you will probably benefit from installing it.
+<p>
+You may consider using <a href="http://www.springsource.com/developer/sts">SpringSource Tool Suite</a>, 
+which is a special edition of Eclipse with all kinds of facilities for Spring. 
+The integration is well done, and it's a powerful environment for Spring work.
+However, it is not required for this demo.
+<p/>
+<h2>Installation</h2>
+Installation should be a breeze:
+<ol>
+	<li>Download the demo (if you're reading this, you probably figured that part out already)
+	<li>Import the BusLogicDemoSpring directory into Eclipse or STS as a project (if you use a different IDE, 
+	you should still be able to do that, but we have not tested that)
+	<li>Run the application on a server. We use Tomcat 7.0, but any reasonably recent server should do.
+	<li>Connect to <a href="http://localhost:8080/BusLogicDemoSpring">http://localhost:8080/BusLogicDemoSpring</a>
+</ol>
+
+<h2>What to do in the app</h2>
+
+Once you are in the app, we suggest that you do the following to exercise the business logic:
+
+<h4>Edit a customer's credit limit</h4>
+
+Change the credit limit for Alpha and Sons to something less than the current balance. This will
+violate a constraint, which will roll back the transaction and display a message.
+
+<h4>Mark an order as paid</h4>
+
+If you mark any order as paid, the customer's balance will be decreased by that order's amount.
+
+<h4>Change a line item's product</h4>
+
+Using the drop-down, change a line item's product. Notice how:
+<ol>
+	<li>the unit price is updated (copied from the new product)
+	<li>the amount is recomputed
+	<li>the order's total is recomputed
+	<li>the customer's balance is recomputed (assuming the order is not paid)
+	<li>if the customer's new balance exceeds the credit limit, an error message appears
+</ol>
+<p/>
+While this may all seem simple, there is actually quite a bit going on here. In this particular case, the following rules were involved:
+<p/>
+<table border="1" cellpadding="4" cellspacing="0" style="font-size: 10pt;">
+	<tr>
+		<td width="60%" class="code">
+@ParentCopy("product.price")<br/>
+public void deriveProductPrice() { }
+		</td>
+		<td>
+ 	 The product's price was copied to the order item's productPrice.
+ 	 	</td>
+ 	 </tr>
+	<tr>
+		<td class="code">
+@Formula("productPrice * qtyOrdered")<br/>
+public void deriveAmount() { }
+		</td>
+		<td>
+ The order item's amount was then be recomputed, since productPrice had changed.
+ 	 	</td>
+ 	 </tr>
+	<tr>
+		<td class="code">
+@Sum("lineitems.amount")<br/>
+public void deriveAmountTotal() { }
+		</td>
+		<td>
+ 	 The order's amountTotal was then be recomputed, since one of its items' amount had changed.
+ 	 	</td>
+ 	 </tr>
+	<tr>
+		<td class="code">
+@Sum("purchaseorders.amountTotal where paid = false")<br/>
+public void deriveBalance() { }
+		</td>
+		<td>
+ 	 If the order is not paid, then the customer's balance was recomputed, since one of the unpaid orders' amountTotal had changed.
+ 	 	</td>
+ 	 </tr>
+	<tr>
+		<td class="code" nowrap>
+@Constraint(value="balance <= creditLimit",<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;errorMessage="Customer balance exceeds credit limit")<br/>
+public void constraintCreditLimit() { }
+		</td>
+		<td>
+ 	 Finally, the customer's freshly-updated balance was compared to the credit limit, and, if it exceeded it, the transaction was rolled back.
+ 	 	</td>
+ 	 </tr>
+</table>
+<p/>
+Notice that we never specifically invoked any of these rules. They were invoked automatically as part of the commit process. 
+And they were invoked <b>in the correct order</b>, because the logic engine understands the dependencies between them.
+<p/>
+This means that the application doesn't have to know (or care) about the rules, and can just focus on the task at hand 
+(allowing the user to manipulate data), rather than worry about enforcing the underlying business logic.
+
+<h4>Visualizing the rules</h4>
+If you select the <code>Show events</code> checkbox at the bottom of the page, any changes you make to the data
+will result in the display of all the rules that were executed within the transaction.
+
+<h2>Where to go from here</h2>
+
+We hope this very brief introduction to declarative business logic has been worth your time.
+This demo is a <b><i>very</i></b> simple example, but the same concepts can be used to create very
+sophisticated transactional applications. Please visit 
+<a href="http://www.automatedbusinesslogic.com">ABL's web site</a> for more information, and don't
+hesitate to <a href="mailto:support@automatedbusinesslogic.com">drop us a line</a>: we always love to hear from you.
+
+<p/>&nbsp; 
+<div style="font-size: 8pt; color: #888888;">Version: Build 0010 - Build date 2011-08-11-06-03</div>
+
+	</div>
+	</body>
+</html>

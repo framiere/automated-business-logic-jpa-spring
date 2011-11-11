@@ -1,0 +1,24 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+        version="1.0">
+ 
+    <persistence-unit name="buslogicdemo">
+      <provider>org.hibernate.ejb.HibernatePersistence</provider>
+      <class>autobizlogic.demo.buslogicdemospring.data.Purchaseorder</class>
+      <class>autobizlogic.demo.buslogicdemospring.data.Customer</class>
+      <class>autobizlogic.demo.buslogicdemospring.data.Lineitem</class>
+      <class>autobizlogic.demo.buslogicdemospring.data.Product</class>
+      <properties>
+      	 <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+      	 <property name="hibernate.default_catalog" value="PUBLIC" />
+      	 <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+         <property name="hibernate.show_sql" value="true"/>
+         <property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider"/>
+         
+         <!-- Turn on the ABL engine -->
+         <property name="hibernate.current_session_context_class" value="com.autobizlogic.abl.session.CurrentSessionContextProxy" />
+         
+      </properties>
+    </persistence-unit>
+</persistence>
