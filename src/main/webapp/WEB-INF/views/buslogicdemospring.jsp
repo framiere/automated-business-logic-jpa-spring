@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="demo" tagdir="/WEB-INF/tags" %>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -46,7 +45,7 @@
 		function update(custName, arg) {
 			if ( ! custName || custName == '')
 				custName = "${customer.name}";
-			window.location='/BusLogicDemoSpring/${controllerName}?name=' + escape(custName) + '&' + arg;
+			window.location='<c:url value="/${controllerName}?customerName="/>' + escape(custName) + '&' + arg;
 		}
 		
 		function isNumber(str) {
@@ -83,47 +82,41 @@
 			<td>
 				<demo:AllCustomersSelect />
 			</td>
-			<td style="width: 80%; background-color: EEEEEE;">
+			<td>
 				Current transaction mode: ${txMode}
+				<br/>
+				Show events: <input type="checkbox" ${showEvents ? 'checked' : ''} onclick="update(null, 'action=prefs&value=' + this.checked);" />
 			</td>
-			<td>&nbsp;&nbsp;</td>
-			<td><a href="/BusLogicDemoSpring/resources/Readme.html" target="help" style="padding: 3px; background-color: #333333; color: #DDDDDD;">Help</a></td>
+			<td><a href="<c:url value="/resources/Readme.html"/>" target="help" style="padding: 3px; background-color: #333333; color: #DDDDDD;">Help</a></td>
 		</tr>
 	</table>
 	<p/>
 	<c:if test="${errorMessage != null}">
 	<div style="padding: 5px; background-color: #FFDDDD; border: solid 1px #FF0000;">${errorMessage}
 	<br/>
-	<a href="/BusLogicDemoSpring/${controllerName}?name=${customer.name}">Refresh</a>
+	<a href="<c:url value="/${controllerName}?customerName=${customer.name}"/>">Refresh</a>
 	</div>
 	</c:if>
 	
     <table border="0" cellspacing="3">
     	<tr>
-    		<td>Balance:</td>
     		<td>
-    <input type="text" value="${customer.balance}" 
-    	style="text-align: right; background-color: #DDDDDD;" readonly size="9"/>
+    		Balance: <input type="text" value="${customer.balance}" style="text-align: right; background-color: #DDDDDD;" readonly size="9"/>
 			</td>
-			<td>&nbsp;&nbsp;</td>
-			<td>Credit limit:</td>
 			<td>
-    <input type="text" value="${customer.creditLimit}" 
-    	style="text-align: right;" size="9"
-    	onchange="if ( ! isNumber(this.value)) {alert('Invalid number'); return false;} update(null, 'todo=update&type=Customer&att=creditLimit&value=' + escape(this.value))"
+			Credit limit: <input type="text" value="${customer.creditLimit}" style="text-align: right;" size="9"
+    	onchange="if ( ! isNumber(this.value)) {alert('Invalid number'); return false;} update(null, 'action=update&dataType=customer&attribute=creditLimit&value=' + escape(this.value))"
     	/>
 			</td>
-			<td>&nbsp;&nbsp;</td>
-			<td>Preferred:</td>
 			<td>
-				<input type="checkbox" ${customer.preferred ? "checked" : ""} onclick="update(null, 'todo=update&type=Customer&att=isPreferred');" />
+				Preferred: <input type="checkbox" ${customer.preferred ? "checked" : ""} onclick="update(null, 'action=update&dataType=customer&attribute=isPreferred');" />
 			</td>
 		</tr>
 	</table>
 	<p/>
 	
 	<table cellpadding="3" cellspacing="0">
-		<c:forEach var="order" items="${customer.purchaseorders}">
+		<c:forEach var="order" items="${customer.purchaseOrders}">
 			<thead style="background-color: #555555; color: #DDDDFF;">
 				<tr>
 					<td>&nbsp;</td>
@@ -137,12 +130,12 @@
 			<tr valign="top" style="background-color: #E4E4E4;">
 				<td style="font-size: 9pt;">
 					<a href="#" 
-						onclick="if ( ! confirm('Delete this order?')) return false; update(null, 'todo=delete&type=Order&id=${order.orderNumber}'); return false;">Delete</a>
+						onclick="if ( ! confirm('Delete this order?')) return false; update(null, 'action=delete&dataType=order&id=${order.orderNumber}'); return false;">Delete</a>
 				</td>
 				<td align="center">${order.orderNumber}</td>
 				<td align="right">${order.amountTotal}</td>
 				<td align="center">
-					<input type="checkbox" ${order.paid ? "checked" : ""} onclick="update(null, 'todo=update&type=Order&id=${order.orderNumber}&att=paid');" />
+					<input type="checkbox" ${order.paid ? "checked" : ""} onclick="update(null, 'action=update&dataType=order&id=${order.orderNumber}&attribute=paid');" />
 				<td rowspan="2">
 					<table cellspacing="0" cellpadding="4">
 						<thead>
@@ -151,21 +144,21 @@
 						<c:forEach var="item" items="${order.lineitems}">
 							<tr>
 								<td style="font-size: 9px; border: 1px solid #888888;">
-									<a href="#" onclick="if ( ! confirm('Delete this line item?')) return false; update(null, 'todo=delete&type=Lineitem&id=${item.lineitemId}'); return false;">Delete</a>
+									<a href="#" onclick="if ( ! confirm('Delete this line item?')) return false; update(null, 'action=delete&dataType=lineitem&id=${item.lineitemId}'); return false;">Delete</a>
 								</td>
 								<td style="border: 1px solid #888888;">${item.lineitemId}</td>
 								<td style="border: 1px solid #888888;"><demo:ProductSelect lineItemId="${item.lineitemId}" currentProductId="${item.product.productNumber}"/></td>
 								<td style="border: 1px solid #888888;">
 								    <input type="text" value="${item.qtyOrdered}" 
 								    	style="text-align: right;" size="9"
-								    	onchange="if ( ! isNumber(this.value)) {alert('Invalid number'); return false;} update(null, 'todo=update&type=Lineitem&id=${item.lineitemId}&att=qtyOrdered&value=' + escape(this.value))"
+								    	onchange="if ( ! isNumber(this.value)) {alert('Invalid number'); return false;} update(null, 'action=update&dataType=lineitem&id=${item.lineitemId}&attribute=qtyOrdered&value=' + escape(this.value))"
 								    	/>
 								</td>
 								<td align="right" style="border: 1px solid #888888;">$${item.productPrice}</td>
 								<td align="right" style="border: 1px solid #888888;">$${item.amount}</td>
 							</tr>
 						</c:forEach>
-						<c:if test="${order.lineitems.size() == 0}">
+						<c:if test="${empty order.lineitems}">
 							<tr><td colspan="6"><center><i>No line items</i></center></td></tr>
 						</c:if>
 					</table>
@@ -174,24 +167,23 @@
 			</tr>
 			<tr><td colspan="4" valign="top">
 				<input type="text" size="30" style="font-size:10pt;" value="${order.notes}" 
-					onchange="update(null, 'todo=update&type=Order&id=${order.orderNumber}&att=notes&value=' + escape(this.value))"
+					onchange="update(null, 'action=update&dataType=order&id=${order.orderNumber}&attribute=notes&value=' + escape(this.value))"
 			/>
 			</td></tr>
 			<tr style="background-color: #CCCCCC;"><td colspan="6"><center>
 				<demo:ReassignCustomerSelect orderNumber="${order.orderNumber}" exceptCustomer="${customer.name}"/>
 				&nbsp;&nbsp;
-				<a class="actionlink" href="/BusLogicDemoSpring/${controllerName}?name=${customer.name}&todo=create&type=Lineitem&id=${order.orderNumber}">Create line item</a>
+				<a class="actionlink" href="<c:url value="${controllerName}?customerName=${customer.name}&action=create&dataType=lineitem&id=${order.orderNumber}"/>">Create line item</a>
 			</center></td></tr>
 			<tr><td colspan="5">&nbsp;</td></tr>
 
 		</c:forEach>
-		<c:if test="${cust.purchaseorders.size() == 0}">
-			<tr><td colspan="5" style="text-align: center; font-style: italic;">No orders for this customer</td></tr>
+		
+		<c:if test="${empty customer.purchaseOrders}">
+			<tr><td colspan="5" style="text-align: center; font-style: italic;">${cust}No orders for this customer</td></tr>
 		</c:if>
 		<tr><td colspan="5">
-			<a class="actionlink" href="/BusLogicDemoSpring/${controllerName}?name=${cust.name}&todo=create&type=Order">Create new order</a>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			Show events: <input type="checkbox" ${showEvents ? 'checked' : ''} onclick="update(null, 'todo=prefs&type=showEvents&value=' + this.checked);" />
+			<a class="actionlink" href="<c:url value="/${controllerName}?customerName=${customer.name}&action=create&dataType=order"/>">Create new order</a>
 		</td></tr>
 	</table>
 </td>
@@ -201,10 +193,8 @@
 		<demo:TxEventsTable />
 		</td>
 	</c:if>
-
 	<c:if test="${fyi != null}">
 		<script type="text/javascript">alert("${fyi}");</script>
 	</c:if>
-	
 </body>
 </html>

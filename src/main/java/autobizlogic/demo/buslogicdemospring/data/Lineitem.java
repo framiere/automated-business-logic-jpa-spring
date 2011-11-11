@@ -36,7 +36,7 @@ public class Lineitem {
 	
 	@ManyToOne //(fetch=FetchType.LAZY)
 	@JoinColumn(name="order_number")
-	public Purchaseorder getPurchaseorder() { return purchaseorder; }
-	public void setPurchaseorder(Purchaseorder purchaseorder) { this.purchaseorder = purchaseorder; }
-	private Purchaseorder purchaseorder;
+	public PurchaseOrder getPurchaseOrder() { return purchaseOrder; }
+	public void setPurchaseOrder(PurchaseOrder purchaseorder) { this.purchaseOrder = purchaseorder; }
+	private PurchaseOrder purchaseOrder;
 }

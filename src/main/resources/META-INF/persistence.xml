@@ -5,7 +5,7 @@
  
     <persistence-unit name="buslogicdemo">
       <provider>org.hibernate.ejb.HibernatePersistence</provider>
-      <class>autobizlogic.demo.buslogicdemospring.data.Purchaseorder</class>
+      <class>autobizlogic.demo.buslogicdemospring.data.PurchaseOrder</class>
       <class>autobizlogic.demo.buslogicdemospring.data.Customer</class>
       <class>autobizlogic.demo.buslogicdemospring.data.Lineitem</class>
       <class>autobizlogic.demo.buslogicdemospring.data.Product</class>

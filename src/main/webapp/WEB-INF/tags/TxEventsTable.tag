@@ -1,20 +1,11 @@
 <%@ tag language="java" pageEncoding="ISO-8859-1"%>
-
-<%--
-	Show a table of all the events in the DemoEventListener (if any).
---%>
-
 <%@ tag import="org.apache.commons.beanutils.*" %>
 <%@ tag import="com.autobizlogic.abl.businesslogicengine.*" %>
 <%@ tag import="com.autobizlogic.abl.businesslogicengine.ruleexec.*" %>
 <%@ tag import="com.autobizlogic.abl.event.*" %>
-
 <%@ tag import="autobizlogic.demo.buslogicdemospring.DemoEventListener" %>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <%@ attribute name="orderNumber" type="java.lang.Long" %>
-
 <div style="border: 1px solid #888888; padding: 5px;" id="ChangeSummaryDiv">
 	<div align="center"><h4>What just happened?</h4></div>
 	<table style="border-spacing: 0px; padding: 3px; border: 1px solid #777777; margin: 5px;">

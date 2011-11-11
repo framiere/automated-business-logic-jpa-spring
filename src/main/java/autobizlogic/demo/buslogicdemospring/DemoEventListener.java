@@ -22,10 +22,10 @@ public class DemoEventListener implements com.autobizlogic.abl.event.LogicListen
 	}
 	
 	public DemoEventListener() {
-		super();
 		instance = this;
 	}
 
+	@Override
 	public void onLogicEvent(LogicEvent event) {
 		events.add(event);
 	}

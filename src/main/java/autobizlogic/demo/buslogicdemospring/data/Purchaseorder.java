@@ -1,5 +1,8 @@
 package autobizlogic.demo.buslogicdemospring.data;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Vector;
@@ -8,9 +11,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "purchaseorder")
-public class Purchaseorder {
+public class PurchaseOrder {
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy=IDENTITY)
 	@Column(name="order_number", nullable=false)
 	public Long getOrderNumber() { return orderNumber; }
 	public void setOrderNumber(Long orderNumber) { this.orderNumber = orderNumber; }
@@ -38,7 +41,7 @@ public class Purchaseorder {
 	public void setCustomer(Customer customer) { this.customer = customer; }
 	private Customer customer;
 
-	@OneToMany(mappedBy="purchaseorder", cascade={CascadeType.ALL})
+	@OneToMany(mappedBy="purchaseOrder", cascade=ALL)
 	@OrderBy("lineitemId desc")
 	public List<Lineitem> getLineitems() { return lineitems; }
 	public void setLineitems(List<Lineitem> lineitems) { this.lineitems = lineitems;}

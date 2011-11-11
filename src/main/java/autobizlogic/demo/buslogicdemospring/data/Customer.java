@@ -50,9 +50,9 @@ public class Customer implements Cloneable {
 	
 	@OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.EAGER, mappedBy="customer")
 	@OrderBy("orderNumber desc")
-	public List<Purchaseorder> getPurchaseorders() { return this.purchaseorders; }
-	public void setPurchaseorders(List<Purchaseorder> purchaseorders) { this.purchaseorders = purchaseorders; }
-	private List<Purchaseorder> purchaseorders = new Vector<Purchaseorder>();
+	public List<PurchaseOrder> getPurchaseOrders() { return this.purchaseOrders; }
+	public void setPurchaseOrders(List<PurchaseOrder> purchaseorders) { this.purchaseOrders = purchaseorders; }
+	private List<PurchaseOrder> purchaseOrders = new Vector<PurchaseOrder>();
 
 	public Object clone() {
 		try {
