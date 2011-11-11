@@ -1,5 +1,6 @@
 package com.autobizlogic.demo.service;
 
+import static com.autobizlogic.demo.service.DemoEventListener.demoEventListenerInstance;
 import static java.lang.Boolean.FALSE;
 import static java.math.BigDecimal.ZERO;
 
@@ -9,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -18,7 +18,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 
-import com.autobizlogic.abl.businesslogicengine.ConstraintException;
 import com.autobizlogic.demo.service.data.Customer;
 import com.autobizlogic.demo.service.data.Lineitem;
 import com.autobizlogic.demo.service.data.Product;
@@ -30,10 +29,6 @@ public class DemoService {
     @PersistenceContext
     private EntityManager em;
 
-    /**
-     * Spring purists will no doubt cringe at seeing a WebRequest passed to a service, and domain objects passed back to the controller. This was done for
-     * expediency. Feel free to do otherwise in your own code.
-     */
     @Transactional
     public void handleRequestDeclarative(String customerName, Model model, Action action, DataType dataType, Attribute attribute, String value, String id) {
         handleRequest(customerName, model, action, dataType, attribute, value, id);
@@ -110,13 +105,13 @@ public class DemoService {
         switch (dataType) {
         case customer:
             updateCustomer(customer, attribute, value);
-            return;
+            break;
         case order:
             updateOrder(model, customer, attribute, value, id);
-            return;
+            break;
         case lineitem:
             updateLineItem(attribute, value, id);
-            return;
+            break;
         }
     }
 
@@ -164,10 +159,10 @@ public class DemoService {
         switch (dataType) {
         case order:
             createOrder(customer);
-            return;
+            break;
         case lineitem:
             createLineItem(id);
-            return;
+            break;
         }
     }
 
@@ -200,12 +195,12 @@ public class DemoService {
             PurchaseOrder order = em.find(PurchaseOrder.class, new Long(id));
             order.getCustomer().getPurchaseOrders().remove(order); // Fix this by hand so the objects will reflect reality
             em.remove(order);
-            return;
+            break;
         case lineitem:
             Lineitem item = em.find(Lineitem.class, new Long(id));
             item.getPurchaseOrder().getLineitems().remove(item); // Fix this by hand so the objects will reflect reality
             em.remove(item);
-            return;
+            break;
         }
     }
 
@@ -214,8 +209,8 @@ public class DemoService {
             model.addAttribute("showEvents", false);
         } else {
             model.addAttribute("showEvents", true);
-            if (DemoEventListener.getInstance() != null) {
-                DemoEventListener.getInstance().resetEvents();
+            if (demoEventListenerInstance() != null) {
+                demoEventListenerInstance().resetEvents();
             }
         }
     }
@@ -228,7 +223,7 @@ public class DemoService {
     // This method shows another way, in which you handle the commit yourself, which allows you to catch any
     // constraint failures.
 
-    private TransactionTemplate transactionTemplate = null;
+    private TransactionTemplate transactionTemplate;
 
     @Autowired
     public void setTransactionTemplate(PlatformTransactionManager transactionManager) {
@@ -238,11 +233,17 @@ public class DemoService {
     // Note that this method is not marked as transactional
     public void handleRequestManual(final String customerName, final Model model, final Action action, final DataType dataType, final Attribute attribute,
             final String value, final String id) {
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                handleRequest(customerName, model, action, dataType, attribute, value, id);
-            }
-        });
+        try {
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    handleRequest(customerName, model, action, dataType, attribute, value, id);
+                }
+            });
+        } catch (Exception e) {
+            // your exception logic here in the service
+            // handle rollback, compensation, message whatever you need
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -16,7 +16,7 @@ public class DemoEventListener implements com.autobizlogic.abl.event.LogicListen
     public static DemoEventListener instance;
     public List<LogicEvent> events = new Vector<LogicEvent>();
 
-    public static DemoEventListener getInstance() {
+    public static DemoEventListener demoEventListenerInstance() {
         return instance;
     }
 
