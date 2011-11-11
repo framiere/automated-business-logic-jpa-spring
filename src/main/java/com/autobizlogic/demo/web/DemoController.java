@@ -2,6 +2,7 @@ package com.autobizlogic.demo.web;
 
 import javax.inject.Inject;
 
+import org.hibernate.HibernateException;
 import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,11 +25,16 @@ public class DemoController {
     @Inject
     private DemoService demoService;
 
+    @RequestMapping(value = "/")
+    public String index() {
+        return "redirect:/declarative";
+    }
+
     /**
      * Invoke the service to do the actual work. The handleRequestDeclarative method is marked as transactional, which means that any constraint failures should
      * happen when the method returns. We catch the exception here, and display it as a friendly message.
      */
-    @RequestMapping(value = "/")
+    @RequestMapping(value = "/declarative")
     public String declarativeTransaction(@RequestParam(required = false) String customerName, @RequestParam(required = false) Action action,
             @RequestParam(required = false) DataType dataType, @RequestParam(required = false) Attribute attribute,
             @RequestParam(required = false) String value, @RequestParam(required = false) String id, Model model) {
@@ -38,7 +44,7 @@ public class DemoController {
             extractErrors(model, ex);
         }
         model.addAttribute("txMode", "declarative");
-        model.addAttribute("controllerName", "");
+        model.addAttribute("controllerName", "declarative");
         return "index";
     }
 
@@ -67,7 +73,7 @@ public class DemoController {
         return model;
     }
 
-    private void extractErrors(Model model, RuntimeException ex) {
+    private void extractErrors(Model model, Throwable ex) {
         Throwable cause = ex.getCause();
         if (cause != null && (cause instanceof ConstraintException)) {
             ConstraintException cex = (ConstraintException) cause;

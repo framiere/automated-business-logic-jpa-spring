@@ -1,6 +1,5 @@
 package com.autobizlogic.demo.service;
 
-import static com.autobizlogic.demo.service.DemoEventListener.demoEventListenerInstance;
 import static java.lang.Boolean.FALSE;
 import static java.math.BigDecimal.ZERO;
 
@@ -209,8 +208,8 @@ public class DemoService {
             model.addAttribute("showEvents", false);
         } else {
             model.addAttribute("showEvents", true);
-            if (demoEventListenerInstance() != null) {
-                demoEventListenerInstance().resetEvents();
+            if (DemoEventListener.getInstance() != null) {
+                DemoEventListener.getInstance().resetEvents();
             }
         }
     }

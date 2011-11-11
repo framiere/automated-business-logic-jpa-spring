@@ -83,7 +83,15 @@
 				<demo:AllCustomersSelect />
 			</td>
 			<td>
-				Current transaction mode: ${txMode}
+				Current transaction mode: 
+				<c:choose>
+					<c:when test="${txMode == 'declarative'}">
+						<a href="<c:url value="/manual"/>">declarative</a>
+					</c:when>
+					<c:otherwise>
+						<a href="<c:url value="/declarative"/>">manual</a>
+					</c:otherwise>
+				</c:choose>
 				<br/>
 				Show events: <input type="checkbox" ${showEvents ? 'checked' : ''} onclick="update(null, 'action=prefs&value=' + this.checked);" />
 			</td>
