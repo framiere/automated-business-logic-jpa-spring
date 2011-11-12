@@ -9,8 +9,11 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 	<description>Root Context: defines shared resources accessible to all other web components</description>
 
-	<jdbc:embedded-database id="demoDataSource" />
-
+	<jdbc:embedded-database id="demoDataSource">
+		<!-- import.sql statements will be executed by hibernate -->
+		<!-- see persistence.xml #hibernate.hbm2ddl.auto property -->
+	</jdbc:embedded-database>
+	 
 	<!-- Creates a EntityManagerFactory for use with the Hibernate JPA provider and a simple in-memory data source populated with test data -->
 	<bean id="busLogicEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="demoDataSource" />
