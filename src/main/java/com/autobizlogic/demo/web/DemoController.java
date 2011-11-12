@@ -2,7 +2,6 @@ package com.autobizlogic.demo.web;
 
 import javax.inject.Inject;
 
-import org.hibernate.HibernateException;
 import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +31,9 @@ public class DemoController {
 
     /**
      * Invoke the service to do the actual work. The handleRequestDeclarative method is marked as transactional, which means that any constraint failures should
-     * happen when the method returns. We catch the exception here, and display it as a friendly message.
+     * happen when the method returns.
+     * <p>
+     * We catch the exception here, and display it as a friendly message.
      */
     @RequestMapping(value = "/declarative")
     public String declarativeTransaction(@RequestParam(required = false) String customerName, @RequestParam(required = false) Action action,

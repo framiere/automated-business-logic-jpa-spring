@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import com.autobizlogic.abl.businesslogic.annotations.Constraint;
 import com.autobizlogic.abl.businesslogic.annotations.CurrentBean;
 import com.autobizlogic.abl.businesslogic.annotations.Sum;
-import com.autobizlogic.demo.service.data.Customer;
+import com.autobizlogic.demo.service.model.Customer;
 
 public class CustomerLogic {
 

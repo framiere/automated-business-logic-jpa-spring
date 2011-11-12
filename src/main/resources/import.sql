@@ -4,7 +4,6 @@ INSERT INTO customer (name, balance, creditLimit, preferred) VALUES ('Alpha and 
 INSERT INTO customer (name, balance, creditLimit, preferred) VALUES ('Bravo Hardware', 60, 5000, false);
 INSERT INTO customer (name, balance, creditLimit, preferred) VALUES ('Charlie''s Construction', 220, 1500, true);
 INSERT INTO customer (name, balance, creditLimit, preferred) VALUES ('Delta Engineering', 0, 0, false);
-INSERT INTO customer (name, balance, creditLimit, preferred) VALUES ('Delflogflorengineering', 0, 0, false);
 
 INSERT INTO purchaseorder (order_number, amount_total, paid, notes, customer_name) VALUES (1, 35, 0, 'This is a small order', 'Alpha and Sons');
 INSERT INTO purchaseorder (order_number, amount_total, paid, notes, customer_name) VALUES (2, 675, 1, '', 'Bravo Hardware');

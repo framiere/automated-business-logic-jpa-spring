@@ -17,10 +17,10 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 
-import com.autobizlogic.demo.service.data.Customer;
-import com.autobizlogic.demo.service.data.Lineitem;
-import com.autobizlogic.demo.service.data.Product;
-import com.autobizlogic.demo.service.data.PurchaseOrder;
+import com.autobizlogic.demo.service.model.Customer;
+import com.autobizlogic.demo.service.model.Lineitem;
+import com.autobizlogic.demo.service.model.Product;
+import com.autobizlogic.demo.service.model.PurchaseOrder;
 
 @Service
 public class DemoService {
